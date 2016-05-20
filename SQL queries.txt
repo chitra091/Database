@@ -1,0 +1,169 @@
+Accept/Reject Payments Trader - 
+
+SELECT payment_id, trans_id, client_id, dop FROM payment_details WHERE doa IS NULL AND client_id IN (SELECT client_id FROM associated_with WHERE trader_id = '$trader')
+
+UPDATE payment_details SET doa = '$doa' WHERE payment_id = '$temp[$i]'
+
+SELECT pd.client_id, pt.amt_paid FROM payment_details pd, payment_transaction pt WHERE pd.payment_id = '$temp[$i]' AND pd.payment_id = pt.payment_id
+
+SELECT amount_due FROM account_info WHERE user_id = '$client_id'
+
+UPDATE account_info SET amount_due = '$totalamt' WHERE user_id = '$client_id'
+
+
+Accept/Reject transactions Trader - 
+
+SELECT trans_id, client_id, trans_type, oil_requested, total_amt, total_oil, dor FROM transaction WHERE doa IS NULL AND client_id IN (SELECT client_id FROM associated_with WHERE trader_id = '$trader')
+
+SELECT client_id, total_amt, total_oil FROM transaction WHERE trans_id = '$temp[$i]'
+
+SELECT amount_due, oil_reserve FROM account_info WHERE user_id = '$client_id'
+
+SELECT doa FROM transaction WHERE client_id = '$client_id' AND doa IS NOT NULL ORDER BY doa DESC LIMIT 1
+
+SELECT SUM(total_oil) AS oil_month FROM transaction WHERE client_id = '$client_id' AND month(doa) = '$m'
+
+SELECT level_id FROM associated_with WHERE client_id = '$client_id'
+
+UPDATE associated_with SET level_id = 2 WHERE client_id = '$client_id'
+
+UPDATE transaction SET doa = '$doa' WHERE trans_id = '$temp[$i]'
+
+UPDATE account_info SET amount_due = '$totalamt', oil_reserve = '$totaloil' WHERE user_id = '$client_id'
+
+DELETE FROM transaction WHERE trans_id = '$temp[$i]'
+
+
+Buy on behalf of client - Trader - 
+
+SELECT l.level, l.level_id FROM associated_with a, level l WHERE a.client_id = ". $client_id. " AND a.level_id = l.level_id
+
+SELECT comm_in_cash FROM level WHERE level_id = ". $level_id. " AND level = '". $level. "'
+
+SELECT comm_in_oil FROM level WHERE level_id = ". $level_id. " AND level = '". $level. "'
+
+INSERT INTO transaction (client_id, trans_type, trans_fee, oil_requested, comm_amt, comm_type, total_amt, total_oil, dor, shipped) VALUES ('$client_id', '$tran_type', '$tran_fee1', '$oil_request1', '$comm_amt', '$comm_type1', '$total_fee1', '$total_oil1', '$dor', '$shipped')
+
+select * from transaction where client_id='$client_id' AND trans_type='buy' ORDER BY trans_id DESC LIMIT 1
+
+insert into payment_details (trans_id, client_id) values ('$trans_id', '$client_id')
+
+insert into payment_transaction (payment_id, amt_paid) values ('$pay_id','0')
+
+
+Client - 
+
+select * from user where login_name='$username'
+
+select * from account_info where user_id='$user_id'
+
+
+Client buy - 
+
+select * from user where login_name='$username'
+
+select * from associated_with where client_id='$user_id'
+
+select * from level where level_id='$level_id'
+
+select * from account_info where user_id='$client_id1'
+
+insert into transaction (client_id, trans_type, trans_fee, oil_requested, comm_amt, comm_type, total_amt, total_oil, dor, shipped) values ('$client_id1', '$trans_type', '$tran_fee1', '$oil_requested', '$comm_amt1', '$comm_typ1', '$total_amt1', '$total_oil1', '$dor1', '$ship')
+
+update account_info set amount_due='$amount_due', oil_shipped='$oil_shipped' where user_id='$client_id1'
+
+insert into transaction (client_id, trans_type, trans_fee, oil_requested, comm_amt, comm_type, total_amt, total_oil, dor, shipped) values ('$client_id1', '$trans_type', '$tran_fee1', '$oil_requested', '$comm_amt1', '$comm_typ1', '$total_amt1', '$total_oil1', '$dor1', '$ship'
+
+update account_info set amount_due='$amount_due', oil_reserve='$oil_reserve', oil_shipped='$oil_shipped' where user_id='$client_id1'
+
+select * from transaction where client_id='$client_id1' ORDER BY trans_id DESC LIMIT 1
+
+insert into payment_details (trans_id, client_id) values ('$trans_id', '$client_id1')
+
+select * from payment_details where client_id='$client_id1' ORDER BY payment_id DESC LIMIT 1
+
+insert into payment_transaction (payment_id, amt_paid) values ('$pay_id','0')
+
+
+Client sell - 
+
+select * from user where login_name='$username'
+
+select * from account_info where user_id='$user_id'
+
+update account_info set oil_reserve='$oil_reserve' where user_id='$user_id'
+
+insert into transaction (client_id, trans_type, oil_requested,total_oil, dor, doa) values ('$user_id', '$trans_type', '$oil', '$oil', '$dor', '$dor')
+
+
+Login - 
+
+select * from user where login_name='$un' and password='$pswd'
+
+
+
+Client pay - 
+
+select * from user where login_name='$username'
+
+SELECT * FROM payment_details a, payment_transaction b where a.payment_id=b.payment_id AND client_id='$user_id' AND dop IS NULL
+
+
+Payment details - 
+
+select * from transaction where trans_id='$trans_id'
+
+update payment_details set dop='$dop' where trans_id='$trans_id'
+
+select * from payment_details where trans_id='$trans_id'
+
+update payment_transaction set amt_paid='$amt_due' where payment_id='$pid'
+
+select * from user where login_name='$username'
+
+select * from account_info where user_id='$user_id'
+
+update account_info set amount_due='$amount_due' where user_id='$user_id'
+
+
+Register - 
+
+insert into user(user_type, login_name, password) VALUES('$user_type','$username', '$password')
+
+select * from user where login_name='$username'
+
+insert into profile(user_id, email, first_name, last_name, street, city, state, zip_code, phone_no, cell_no) VALUES('$user_id', '$username', '$fname', '$lname', '$street', '$city', '$state', '$zip', '$phoneno', '$cellno')
+
+insert into account_info(user_id) values ('$user_id')
+
+select * from user where user_type='2'
+
+select user_id from user where user_type='2' and login_name='$trader'
+
+select * from level where level_id = '1'
+
+insert into associated_with(client_id, trader_id, level_id) values ('$user_id', '$trader_id', '$level_id')
+
+select * from user where user_type='2'
+
+
+Sell on behalf of client - Trader - 
+
+SELECT oil_reserve FROM account_info WHERE user_id = ". $client_id
+
+INSERT INTO transaction (client_id, trans_type, trans_fee, oil_requested, comm_amt, comm_type, total_amt, total_oil, dor) VALUES ('$client_id', '$tran_type', 0, '$oil_sell', 0, ' ', 0, '$oil_sell', '$dor')
+
+UPDATE account_info SET oil_reserve = '$oil_reserve' WHERE user_id = ". $client_id
+
+
+
+Search clients - 
+
+SELECT p.user_id, p.first_name, p.last_name, p.street, p.city, p.state, p.zip_code, a.amount_due, a.oil_reserve, a.oil_shipped FROM user s, profile p, account_info a WHERE s.user_id = p.user_id AND s.user_id = a.user_id AND s.user_type = 1 AND (p.first_name LIKE '%". $string. "%' OR p.last_name LIKE '%". $string. "%' OR p.street LIKE '%". $string. "%' OR p.city LIKE '%". $string. "%' OR p.state LIKE '%". $string. "%')
+
+
+
+Trader transaction page - 
+
+SELECT s.user_id, p.first_name FROM user s, profile p WHERE s.user_id = p.user_id AND s.user_type = 1 AND s.user_id IN (SELECT client_id FROM associated_with WHERE trader_id = '$trader')
+

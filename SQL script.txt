@@ -1,0 +1,76 @@
+CREATE TABLE user (		user_id 	INT(5),
+				user_type 	INT(5),
+				login_name	VARCHAR(30),
+				password	VARCHAR(30),
+				PRIMARY KEY 	(user_id))
+
+CREATE TABLE profile (		user_id		INT(5),
+				email		VARCHAR(30),
+				first_name	VARCHAR(30),
+				last_name	VARCHAR(30),
+				street		VARCHAR(30),
+				city		VARCHAR(30),
+				state		VARCHAR(30),
+				zip_code	INT(5),
+				phone_no	INT(11),
+				cell_no		INT(11),
+				FOREIGN KEY 	(user_id)	REFERENCES user)
+
+CREATE TABLE account_info (	user_id		INT(5),
+				amount_due	FLOAT,
+				oil_reserve	FLOAT,
+				oil_shipped	FLOAT,
+				FOREIGN KEY 	(user_id)	REFERENCES user)
+
+CREATE TABLE level (		level_id	INT(5),
+				level		VARCHAR(10),
+				comm_in_oil	INT(5),
+				comm_in_cash	INT(5),
+				PRIMARY KEY 	(level_id))
+
+CREATE TABLE associated_with (	client_id	INT(5),
+				trader_id	INT(5),
+				level_id	INT(5)
+				FOREIGN KEY 	(client_id)	REFERENCES user,
+				FOREIGN KEY 	(level_id)	REFERENCES level)
+
+CREATE TABLE transaction (	trans_id	INT(5),
+				client_id	INT(5),
+				trans_type	VARCHAR(5),
+				trans_fee	FLOAT,
+				oil_requested	FLOAT,
+				comm_amt	FLOAT,
+				comm_type	VARCHAR(5),
+				total_amt	FLOAT,
+				total_oil	FLOAT,
+				dor		DATE,
+				doa		DATE,
+				shipped		VARCHAR(3),
+				PRIMARY KEY	(trans_id),
+				FOREIGN KEY 	(client_id)	REFERENCES user)
+
+CREATE TABLE payment_details (	payment_id	INT(5),
+				trans_id	INT(5),
+				client_id	INT(5),
+				dop		DATE,
+				doa		DATE,
+				PRIMARY KEY	(payment_id),
+				FOREIGN KEY 	(trans_id)	REFERENCES transaction)
+
+CREATE TABLE payment_transaction(payment_id	INT(5),
+				amt_paid	FLOAT,
+				FOREIGN KEY 	(payment_id)	REFERENCES payment_details)
+
+
+
+
+
+DROP TABLE user;
+DROP TABLE profile;
+DROP TABLE account_info;
+DROP TABLE level;
+DROP TABLE associated_with;
+DROP TABLE transaction;
+DROP TABLE payment_details;
+DROP TABLE payment_transaction;
+
